@@ -56,7 +56,7 @@ Pygments==2.19.2
 PyJWT==2.10.1
 python-dotenv==1.2.1
 python-multipart==0.0.21
-pywin32==311
+# pywin32==311
 PyYAML==6.0.3
 redis==7.1.0
 referencing==0.37.0

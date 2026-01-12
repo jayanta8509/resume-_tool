@@ -2,6 +2,7 @@ import logging
 import os
 import time
 from enum import Enum
+from typing import Optional
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, status
@@ -14,6 +15,8 @@ from Experience_d_agent import Experience_result
 from JD_Professional_s_agent import professional_responce as jd_professional_responce
 from JD_Experience_d_agent import Experience_result as jd_Experience_result
 from JD_skill_agent import skill_responce
+from Ats_score_with_jd import ATs_score
+from Ats_score_with_out_jd import ATs_score_with_out_jd
 
 load_dotenv()
 
@@ -95,6 +98,32 @@ class SkillAgentRequest(BaseModel):
         if not v or not v.strip():
             raise ValueError("This field cannot be empty")
         return v.strip()
+
+class AtsJDAgentRequest(BaseModel):
+    security_id: str = Field(..., min_length=1, description="Security authentication ID")
+    resume_data: str = Field(..., min_length=1, description="Resume data")
+    Ats_score: Optional[int] = Field(None, description="privous ATS score")
+    JD: str = Field(..., min_length=1, description="Job Description")
+
+    @field_validator("security_id", "resume_data", "JD")
+    @classmethod
+    def validate_non_empty_fields(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("This field cannot be empty")
+        return v.strip()
+
+class AtsAgentRequest(BaseModel):
+    security_id: str = Field(..., min_length=1, description="Security authentication ID")
+    resume_data: str = Field(..., min_length=1, description="Resume data")
+    Ats_score: Optional[int] = Field(None, description="privous ATS score")
+
+    @field_validator("security_id", "resume_data")
+    @classmethod
+    def validate_non_empty_fields(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("This field cannot be empty")
+        return v.strip()
+
 
 @app.post(
     "/agent/professional/summary",
@@ -266,6 +295,78 @@ async def missing_skill(request: SkillAgentRequest) -> dict:
             detail="An error occurred while processing your request"
         )
 
+
+
+@app.post(
+    "/agent/ATS/Score/With/JD",
+    status_code=status.HTTP_200_OK,
+    summary="ATS Score with JD",
+    description="Analyzes user resume against job description and returns Ats Score",
+    tags=["ATS Score With JD"]
+)
+async def ATS_score_with_jd(request: AtsJDAgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+        if request.Ats_score is None:
+            result = await ATs_score(request.resume_data, request.JD)
+        else :
+            result = await ATs_score(request.resume_data, request.JD, request.Ats_score)
+
+        return {
+            "ATS_Score": result.ats_score,
+            "Improvment_Guide" : result.improvement_guide,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error finding missing skills: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
+
+@app.post(
+    "/agent/ATS/Score",
+    status_code=status.HTTP_200_OK,
+    summary="ATS Score with Out JD",
+    description="Analyzes user resume returns Ats Score",
+    tags=["ATS Score With Out JD"]
+)
+async def ATS_score_with_jd(request: AtsAgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+        if request.Ats_score is None:
+            result = await ATs_score_with_out_jd(request.resume_data)
+        else :
+            result = await ATs_score_with_out_jd(request.resume_data, request.Ats_score)
+
+        return {
+            "ATS_Score": result.ats_score,
+            "Improvment_Guide" : result.improvement_guide,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error finding missing skills: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
 
 @app.get("/", tags=["General"])
 async def root() -> dict:

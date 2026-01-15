@@ -12,7 +12,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 
 
 class Experience_description(BaseModel):
-    description: str
+    description: list[str]
 
 
 # OPTIMIZATION 1: Use faster model with optimized parameters
@@ -115,4 +115,6 @@ async def Experience_result(tone :str, description:str):
     
 #     tone = "Leadership Tone"
 #     output = asyncio.run( Experience_result(tone,description))
-#     print(output.description)
+#     r = output.description
+#     print(len(r))
+#     print(r)

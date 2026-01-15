@@ -17,6 +17,8 @@ from JD_Experience_d_agent import Experience_result as jd_Experience_result
 from JD_skill_agent import skill_responce
 from Ats_score_with_jd import ATs_score
 from Ats_score_with_out_jd import ATs_score_with_out_jd
+from Generate_Experience_d_agent import Generate_Experience_result
+from Generate_Professional_s_agent import Generate_professional_responce
 
 load_dotenv()
 
@@ -160,6 +162,40 @@ async def generate_summary(request: AgentRequest) -> dict:
         )
 
 @app.post(
+    "/agent/Generate/professional/summary",
+    status_code=status.HTTP_200_OK,
+    summary="Generate professional summary with all Resume data",
+    description="Enhances resume text using AI-powered professional tone",
+    tags=["Resume API With Generate"]
+
+)
+async def generate_p_summary(request: AgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+
+        tone = TONE_MAPPING.get(request.tone.value, TONE_MAPPING[Tone.PROFESSIONAL])
+        result = await Generate_professional_responce(tone, request.original_text)
+
+        return {
+            "summary": result.summary,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
+@app.post(
     "/agent/JD/professional/summary",
     status_code=status.HTTP_200_OK,
     summary="Generate professional summary",
@@ -227,6 +263,39 @@ async def generate_Experience_Description(request: AgentRequest) -> dict:
             detail="An error occurred while processing your request"
         )
 
+
+@app.post(
+    "/agent/Generate/Experience/Description",
+    status_code=status.HTTP_200_OK,
+    summary="Generate Experience Description with All Resume Data",
+    description="Enhances resume text using AI-powered professional tone",
+    tags=["Resume API With Generate"]
+)
+async def generate_P_Experience_Description(request: AgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+
+        tone = TONE_MAPPING.get(request.tone.value, TONE_MAPPING[Tone.PROFESSIONAL])
+        result = await Generate_Experience_result(tone, request.original_text)
+
+        return {
+            "summary": result.description,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
 
 @app.post(
     "/agent/JD/Experience/Description",

@@ -12,7 +12,7 @@ openai_api_key = os.getenv("OPENAI_API_KEY")
 
 
 class Experience_description(BaseModel):
-    description: str
+    description: list[str]
 
 
 # OPTIMIZATION 1: Use faster model with optimized parameters
@@ -181,15 +181,15 @@ async def Experience_result(tone: str, description: str, job_description: str):
     return ans
 
 # if __name__ == "__main__":
-#     description = """ Bootstrapped an AI Colpilot for B2B SaaS companies to acquire
-# customers at global conferences.
-#  Built LangGraph-powered agent workflows and orchestrating
-# RAG pipelines with Pinecone for vector retrieval.
-#  Also, built LLM micro-agents to automate event-intelligence
-# tasks feature extraction, lead scoring, and personalized
-# outreach at scale.
-#  Tech stack : Langchain, Python, Pinecone DB, AWS, React, LLMs
-#  Product stack : MixPanel, Airtable, n8n, Gumloop, Zapier, etc. """
+#     description = """• Deployed AI Financial Advisor Platform integrating LangChain, CrewAI, AutoGen agents with OpenAI-ada-002 
+# embeddings, Pinecone vector DB, IBM Watson transcription API, and Twilio REST API for real-time 
+# advisor-client communication. 
+# • Fine-tuned Mistral-7B on e-commerce FAQ dataset using PEFT with LoRA and Supervised Fine-tuning Trainer, achieving 30% 
+# improvement in query understanding and response accuracy for customer support automation. 
+# • Built production loan prediction and repayment models using SGD algorithm, NumPy, Pandas with comprehensive EDA and 
+# feature engineering, achieving 85%+ accuracy in credit risk assessment. 
+# • Designed dual-mode recommendation engine using SVD algorithm, delivering personalized product suggestions for 10K+ users 
+# with selection sort optimization for new and existing customer segments. """
 
 #     job_description = """We are looking for a Senior AI/ML Engineer with experience in:
 # - LangChain, LangGraph, and LLM framework development
@@ -204,4 +204,5 @@ async def Experience_result(tone: str, description: str, job_description: str):
 
 #     tone = "Leadership Tone"
 #     output = asyncio.run(Experience_result(tone, description, job_description))
-#     print(output.description)
+#     r = output.description
+#     print(len(r))

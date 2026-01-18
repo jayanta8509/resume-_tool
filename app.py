@@ -3,9 +3,11 @@ import os
 import time
 from enum import Enum
 from typing import Optional
+import tempfile
+import aiofiles
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, field_validator
 import uvicorn
@@ -19,6 +21,7 @@ from Ats_score_with_jd import ATs_score
 from Ats_score_with_out_jd import ATs_score_with_out_jd
 from Generate_Experience_d_agent import Generate_Experience_result
 from Generate_Professional_s_agent import Generate_professional_responce
+from data_ex import extract_text_from_pdf,resume_json
 
 load_dotenv()
 
@@ -432,6 +435,99 @@ async def ATS_score_with_jd(request: AtsAgentRequest) -> dict:
         raise
     except Exception as e:
         logger.error(f"Error finding missing skills: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
+
+@app.post(
+    "/agent/resume/upload",
+    status_code=status.HTTP_200_OK,
+    summary="Upload resume PDF",
+    description="Upload and process a resume PDF file with security authentication",
+    tags=["Resume Upload"]
+)
+async def upload_resume_pdf(
+    security_id: str,
+    resume_pdf: UploadFile = File(..., description="Resume PDF file")
+) -> dict:
+    """
+    Upload a resume PDF file with security authentication.
+
+    Args:
+        security_id: Security authentication ID
+        resume_pdf: PDF file to upload
+
+    Returns:
+        dict: Contains upload status, file info, and extracted resume data
+    """
+
+    try:
+        # Validate security_id
+        if not security_id or not security_id.strip():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Security ID cannot be empty"
+            )
+
+        if security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+
+        # Validate file type
+        if not resume_pdf.filename.lower().endswith('.pdf'):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only PDF files are allowed"
+            )
+
+        # Save uploaded file to a temporary file
+        async with aiofiles.tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as temp_file:
+            content = await resume_pdf.read()
+            await temp_file.write(content)
+            temp_path = temp_file.name
+
+        try:
+            # Extract text from the temporary PDF file
+            extracted_text = await extract_text_from_pdf(temp_path)
+
+            # Validate extracted text is not empty
+            if not extracted_text:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Failed to extract text from PDF or PDF is empty"
+                )
+
+            # Convert to JSON format
+            resume_data = await resume_json(extracted_text)
+
+            logger.info(f"Resume PDF uploaded and processed successfully: {resume_pdf.filename}")
+
+            return {
+                "status": "success",
+                "message": "Resume PDF uploaded and processed successfully",
+                "filename": resume_pdf.filename,
+                "file_size": len(content),
+                # "extracted_text": extracted_text,
+                "resume_data": resume_data,
+                "timestamp": time.time(),
+            }
+        finally:
+            # Clean up temporary file
+            import os
+            try:
+                os.unlink(temp_path)
+            except Exception:
+                pass
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error uploading resume PDF: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while processing your request"

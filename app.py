@@ -22,7 +22,7 @@ from Ats_score_with_out_jd import ATs_score_with_out_jd
 from Generate_Experience_d_agent import Generate_Experience_result
 from Generate_Professional_s_agent import Generate_professional_responce
 from data_ex import extract_text_from_pdf,resume_json
-
+from grammarly import correct_grammar
 load_dotenv()
 
 # Setup logging
@@ -123,6 +123,18 @@ class AtsAgentRequest(BaseModel):
     Ats_score: Optional[int] = Field(None, description="privous ATS score")
 
     @field_validator("security_id", "resume_data")
+    @classmethod
+    def validate_non_empty_fields(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("This field cannot be empty")
+        return v.strip()
+
+
+class GrammarlyRequest(BaseModel):
+    security_id: str = Field(..., min_length=1, description="Security authentication ID")
+    row_data: str = Field(..., min_length=1, description="Row data")
+
+    @field_validator("security_id", "row_data")
     @classmethod
     def validate_non_empty_fields(cls, v: str) -> str:
         if not v or not v.strip():
@@ -532,6 +544,40 @@ async def upload_resume_pdf(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while processing your request"
         )
+
+@app.post(
+    "/Grammarly/sentence/Agent",
+    status_code=status.HTTP_200_OK,
+    summary="Grammarly",
+    description="Analyzes text returns correct sentence",
+    tags=["Sentence improvement using AI"]
+)
+async def ATS_score_with_jd(request: GrammarlyRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+        
+        result = await correct_grammar(request.row_data)
+
+        return {
+            "improvement_sentence": result,
+            "Row_sentence" : request.row_data,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error finding missing skills: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
 
 @app.get("/", tags=["General"])
 async def root() -> dict:

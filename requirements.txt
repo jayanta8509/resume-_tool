@@ -1,9 +1,9 @@
+aiofiles==25.1.0
 annotated-doc==0.0.4
 annotated-types==0.7.0
 anyio==4.12.0
 async-timeout==5.0.1
 attrs==25.4.0
-aiofiles
 certifi==2025.11.12
 cffi==2.0.0
 charset-normalizer==3.4.4
@@ -55,9 +55,9 @@ pydantic-settings==2.12.0
 pydantic_core==2.41.5
 Pygments==2.19.2
 PyJWT==2.10.1
+PyMuPDF==1.26.7
 python-dotenv==1.2.1
 python-multipart==0.0.21
-# pywin32==311
 PyYAML==6.0.3
 redis==7.1.0
 referencing==0.37.0
@@ -83,6 +83,7 @@ typing_extensions==4.15.0
 urllib3==2.6.2
 uuid_utils==0.12.0
 uvicorn==0.40.0
+uvloop==0.22.1
 watchfiles==1.1.1
 websockets==15.0.1
 xxhash==3.6.0

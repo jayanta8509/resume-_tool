@@ -3,3 +3,5 @@ env
 __pycache__
 server.log
 
+private
+private.pub

@@ -597,7 +597,7 @@ async def root() -> dict:
 
 @app.get("/health", tags=["General"])
 async def health_check() -> dict:
-    return {"status": "healthy", "timestamp": time.time()}
+    return {"status": "healthy-Server", "timestamp": time.time()}
 
 
 if __name__ == "__main__":

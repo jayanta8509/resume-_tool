@@ -36,8 +36,13 @@ jobs:
               echo "⚠️  WARNING: .env created from template. Please update OPENAI_API_KEY and Security_ID!"
             fi
 
-            # Stop and remove old containers/images to avoid ContainerConfig error
-            echo "Cleaning up old containers..."
+            # Aggressive cleanup to avoid ContainerConfig error with old docker-compose
+            echo "Forcefully removing old containers and images..."
+            docker stop resume-builder-api 2>/dev/null || true
+            docker rm -f resume-builder-api 2>/dev/null || true
+            docker rmi -f resume-builder-api:latest 2>/dev/null || true
+
+            # Also try docker-compose down (may fail, that's ok)
             docker-compose down -rmi all -v 2>/dev/null || true
 
             # Build and start new container

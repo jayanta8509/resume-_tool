@@ -31,10 +31,10 @@ jobs:
 
             # Cleanup to avoid ContainerConfig error - must be in this order!
             echo "Step 1: Stop and remove containers with docker-compose..."
-            docker-compose down
+            docker-compose down 2>/dev/null || true
 
             echo "Step 2: Remove the old image..."
-            docker rmi resume-api
+            docker rmi resume-builder-api:latest 2>/dev/null || true
 
             # Build and start new container
             echo "Building and starting container..."

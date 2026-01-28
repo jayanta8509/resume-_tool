@@ -34,7 +34,7 @@ jobs:
             docker-compose down
 
             echo "Step 2: Remove the old image..."
-            docker rmi resume-builder-api:latest
+            docker rmi resume-api
 
             # Build and start new container
             echo "Building and starting container..."

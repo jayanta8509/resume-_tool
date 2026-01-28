@@ -1,0 +1,67 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e  # Exit on any error
+
+            # Navigate to project directory
+            cd /home/hiringeye-resumebuilderai/htdocs/resumebuilderai.hiringeye.ai/resume-_tool
+
+            # Stash any local changes (including .env)
+            git stash push -m "pre-deploy-stash" -- .env
+
+            # Pull latest code
+            echo "Pulling latest code..."
+            git pull origin main
+
+            # Check if .env.example exists and .env doesn't (first time setup)
+            if [ -f .env.example ] && [ ! -f .env ]; then
+              echo "Creating .env from .env.example..."
+              cp .env.example .env
+              echo "⚠️  WARNING: .env created from template. Please update OPENAI_API_KEY and Security_ID!"
+            fi
+
+            # Stop and remove old containers/images to avoid ContainerConfig error
+            echo "Cleaning up old containers..."
+            docker-compose down -rmi all -v 2>/dev/null || true
+
+            # Build and start new container
+            echo "Building and starting container..."
+            docker-compose up -d --build
+
+            # Wait for container to be healthy
+            echo "Waiting for container to start..."
+            sleep 10
+
+            # Check container status
+            if docker-compose ps | grep -q "Up"; then
+              echo "✅ Deployment successful!"
+            else
+              echo "❌ Container failed to start. Check logs with: docker-compose logs"
+              docker-compose logs
+              exit 1
+            fi
+
+            # Clean up old unused images (keep last 5)
+            echo "Cleaning up old images..."
+            docker image prune -a -f --filter "until=24h"
+
+            echo "Deployment completed successfully!"

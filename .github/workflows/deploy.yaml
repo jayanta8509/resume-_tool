@@ -25,10 +25,7 @@ jobs:
             # Navigate to project directory
             cd /home/hiringeye-resumebuilderai/htdocs/resumebuilderai.hiringeye.ai/resume-_tool
 
-            # Stash any local changes (including .env)
-            git stash push -m "pre-deploy-stash" -- .env
-
-            # Pull latest code
+            # Pull latest code (.env is in .gitignore so it won't be affected)
             echo "Pulling latest code..."
             git pull origin main
 

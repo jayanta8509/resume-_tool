@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: resume-builder-api:latest
     container_name: resume-builder-api
     ports:
       - "8001:8001"
@@ -18,7 +19,7 @@ services:
       # Mount for development - comment out in production
       - ./server.log:/app/server.log
     healthcheck:
-      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8001/health', timeout=5)"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=5)"]
       interval: 30s
       timeout: 10s
       retries: 3

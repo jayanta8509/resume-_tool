@@ -60,8 +60,4 @@ jobs:
               exit 1
             fi
 
-            # Clean up old unused images (keep last 5)
-            echo "Cleaning up old images..."
-            docker image prune -a -f --filter "until=24h"
-
             echo "Deployment completed successfully!"

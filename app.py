@@ -23,6 +23,8 @@ from Generate_Experience_d_agent import Generate_Experience_result
 from Generate_Professional_s_agent import Generate_professional_responce
 from data_ex import extract_text_from_pdf,resume_json
 from grammarly import correct_grammar
+from jd_based_professional_recommend import professional_responce_gap
+from jd_based_experience_recommend import experience_response_gap
 load_dotenv()
 
 # Setup logging
@@ -142,6 +144,20 @@ class GrammarlyRequest(BaseModel):
         return v.strip()
 
 
+class JDgapAgentRequest(BaseModel):
+    security_id: str = Field(..., min_length=1, description="Security authentication ID")
+    original_text: str = Field(..., min_length=1, description="Original text to enhance")
+    JD: str = Field(..., min_length=1, description="Job Description")
+
+    @field_validator("security_id", "original_text")
+    @classmethod
+    def validate_non_empty_fields(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("This field cannot be empty")
+        return v.strip()
+
+
+
 @app.post(
     "/agent/professional/summary",
     status_code=status.HTTP_200_OK,
@@ -243,6 +259,77 @@ async def generate_summary_with_JD(request: JDAgentRequest) -> dict:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred while processing your request"
         )
+
+
+
+
+@app.post(
+    "/agent/JD/professional/summary/gap",
+    status_code=status.HTTP_200_OK,
+    summary="Generate professional summary Gap",
+    description="Gap with JD and professional summary",
+    tags=["Gap with JD"]
+
+)
+async def gap_jd_professional_summary(request: JDgapAgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+        result = await professional_responce_gap(request.original_text ,request.JD)
+
+        return {
+            "summary": result.recomment,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
+
+@app.post(
+    "/agent/JD/Experience/Description/gap",
+    status_code=status.HTTP_200_OK,
+    summary="Generate Experience Description Gap",
+    description="Gap with JD and Experience Description",
+    tags=["Gap with JD"]
+
+)
+async def gap_jd_Experience_Description(request: JDgapAgentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+        result = await experience_response_gap(request.original_text ,request.JD)
+
+        return {
+            "summary": result.recomment,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
+
+
 
 
 @app.post(

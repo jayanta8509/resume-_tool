@@ -669,7 +669,7 @@ async def ATS_score_with_jd(request: GrammarlyRequest) -> dict:
 @app.get("/", tags=["General"])
 async def root() -> dict:
     return {
-        "name": "Resume Builder API",
+        "name": "Resume Improvment API",
         "version": "2.0.0",
         "endpoints": {
             "professional_summary": "POST /agent/professional/summary",

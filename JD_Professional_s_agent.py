@@ -164,63 +164,63 @@ async def professional_responce(tone: str, resume_data: str, job_description: st
     ans = result["structured_response"]
     return ans
 
-if __name__ == "__main__":
-    resume_data = """EXPERIENCE
-AI/ML Engineer
-Iksen India Pvt Ltd
-Jul 2024 – Present
-Kolkata, India
-• Architected AI Question Generation System using GPT-4O mini, OpenCV, and Swarm framework with AWS S3 integration,
-implementing pattern recognition and context-aware question generation following SDLC best practices.
-• Built production-grade Virtual Try-On AI platform using Fooocus model and FastAPI, deployed on RunPod GPU servers,
-generating photorealistic fashion visualizations with 95%+ accuracy for e-commerce applications.
-• Engineered end-to-end AI video generation pipeline integrating GPT-4O for scripting, Eleven Labs for voice synthesis,
-Stable Diffusion for image creation, and WAN 2.1 for animation, deployed on scalable RunPod infrastructure.
-• Developed enterprise recruitment intelligence platform with three specialized GPT-4o AI agents for resume parsing, JD analysis,
-and candidate matching, delivering 40% faster screening via FastAPI REST backend.
-• Created multi-agent Resume Maker Tool with GPT-4o-mini, aggregating data from LinkedIn, GitHub, and portfolios to
-generate ATS-optimized resumes with 95%+ compliance through async processing and structured JSON outputs.
-Machine Learning Engineer
-Paythrough Softwares and Solutions Pvt Ltd
-Jun 2023 – Jun 2024
-Kolkata, India
-• Deployed AI Financial Advisor Platform integrating LangChain, CrewAI, AutoGen agents with OpenAI-ada-002
-embeddings, Pinecone vector DB, IBM Watson transcription API, and Twilio REST API for real-time
-advisor-client communication.
-• Fine-tuned Mistral-7B on e-commerce FAQ dataset using PEFT with LoRA and Supervised Fine-tuning Trainer, achieving 30%
-improvement in query understanding and response accuracy for customer support automation.
-• Built production loan prediction and repayment models using SGD algorithm, NumPy, Pandas with comprehensive EDA and
-feature engineering, achieving 85%+ accuracy in credit risk assessment.
-• Designed dual-mode recommendation engine using SVD algorithm, delivering personalized product suggestions for 10K+ users
-with selection sort optimization for new and existing customer segments.
+# if __name__ == "__main__":
+#     resume_data = """EXPERIENCE
+# AI/ML Engineer
+# Iksen India Pvt Ltd
+# Jul 2024 – Present
+# Kolkata, India
+# • Architected AI Question Generation System using GPT-4O mini, OpenCV, and Swarm framework with AWS S3 integration,
+# implementing pattern recognition and context-aware question generation following SDLC best practices.
+# • Built production-grade Virtual Try-On AI platform using Fooocus model and FastAPI, deployed on RunPod GPU servers,
+# generating photorealistic fashion visualizations with 95%+ accuracy for e-commerce applications.
+# • Engineered end-to-end AI video generation pipeline integrating GPT-4O for scripting, Eleven Labs for voice synthesis,
+# Stable Diffusion for image creation, and WAN 2.1 for animation, deployed on scalable RunPod infrastructure.
+# • Developed enterprise recruitment intelligence platform with three specialized GPT-4o AI agents for resume parsing, JD analysis,
+# and candidate matching, delivering 40% faster screening via FastAPI REST backend.
+# • Created multi-agent Resume Maker Tool with GPT-4o-mini, aggregating data from LinkedIn, GitHub, and portfolios to
+# generate ATS-optimized resumes with 95%+ compliance through async processing and structured JSON outputs.
+# Machine Learning Engineer
+# Paythrough Softwares and Solutions Pvt Ltd
+# Jun 2023 – Jun 2024
+# Kolkata, India
+# • Deployed AI Financial Advisor Platform integrating LangChain, CrewAI, AutoGen agents with OpenAI-ada-002
+# embeddings, Pinecone vector DB, IBM Watson transcription API, and Twilio REST API for real-time
+# advisor-client communication.
+# • Fine-tuned Mistral-7B on e-commerce FAQ dataset using PEFT with LoRA and Supervised Fine-tuning Trainer, achieving 30%
+# improvement in query understanding and response accuracy for customer support automation.
+# • Built production loan prediction and repayment models using SGD algorithm, NumPy, Pandas with comprehensive EDA and
+# feature engineering, achieving 85%+ accuracy in credit risk assessment.
+# • Designed dual-mode recommendation engine using SVD algorithm, delivering personalized product suggestions for 10K+ users
+# with selection sort optimization for new and existing customer segments.
 
-TECHNICAL SKILLS
-Languages: Python, C/C++, SQL
-AI/ML Frameworks: LangChain, RAG, LangGraph, CrewAI, AutoGen, Swarm, Pydantic AI, MLOps, Scikit-Learn, TensorFlow,
-Keras, PyTorch
-LLM & Models: OpenAI GPT-4/4o, Gemini, DeepSeek, Anthropic Claude, Grok, Mistral, BERT, T5, Stable Diffusion, Hugging
-Face
-Databases: PostgreSQL, MySQL, Redis, Pinecone, FAISS, Chroma, Qdrant (Vector DBs)
-DevOps & Cloud: Docker, Git, AWS (SageMaker, EC2, Lambda, S3, LightSail), RunPod GPU Servers, CI/CD Pipelines
-APIs & Web: FastAPI, Flask, Quart, Django REST, RESTful APIs, OpenCV, Beautiful Soup
-ML Techniques: NLP, Computer Vision, Supervised/Unsupervised Learning, Feature Engineering, XGBoost, SGD, PEFT, LoRA,
-Model Fine-tuning
+# TECHNICAL SKILLS
+# Languages: Python, C/C++, SQL
+# AI/ML Frameworks: LangChain, RAG, LangGraph, CrewAI, AutoGen, Swarm, Pydantic AI, MLOps, Scikit-Learn, TensorFlow,
+# Keras, PyTorch
+# LLM & Models: OpenAI GPT-4/4o, Gemini, DeepSeek, Anthropic Claude, Grok, Mistral, BERT, T5, Stable Diffusion, Hugging
+# Face
+# Databases: PostgreSQL, MySQL, Redis, Pinecone, FAISS, Chroma, Qdrant (Vector DBs)
+# DevOps & Cloud: Docker, Git, AWS (SageMaker, EC2, Lambda, S3, LightSail), RunPod GPU Servers, CI/CD Pipelines
+# APIs & Web: FastAPI, Flask, Quart, Django REST, RESTful APIs, OpenCV, Beautiful Soup
+# ML Techniques: NLP, Computer Vision, Supervised/Unsupervised Learning, Feature Engineering, XGBoost, SGD, PEFT, LoRA,
+# Model Fine-tuning
 
-EDUCATION
-Narula Institute of Technology (MAKAUT)
-Bachelor of Technology in Computer Science and Engineering; CGPA: 8.10/10.0
-South Calcutta Polytechnic (WBSCTE)
-Diploma in Computer Science and Technology; Percentage: 71.90%"""
+# EDUCATION
+# Narula Institute of Technology (MAKAUT)
+# Bachelor of Technology in Computer Science and Engineering; CGPA: 8.10/10.0
+# South Calcutta Polytechnic (WBSCTE)
+# Diploma in Computer Science and Technology; Percentage: 71.90%"""
 
-    job_description = """We are looking for a Senior Software Engineer with experience in:
-- Python, Java, or Go programming languages
-- Distributed systems and microservices architecture
-- Machine Learning and AI/ML frameworks
-- Cloud platforms (AWS, GCP, or Azure)
-- Data engineering and ETL pipelines
-- Agile development methodologies
-- Leading technical teams and mentoring junior developers"""
+#     job_description = """We are looking for a Senior Software Engineer with experience in:
+# - Python, Java, or Go programming languages
+# - Distributed systems and microservices architecture
+# - Machine Learning and AI/ML frameworks
+# - Cloud platforms (AWS, GCP, or Azure)
+# - Data engineering and ETL pipelines
+# - Agile development methodologies
+# - Leading technical teams and mentoring junior developers"""
 
-    tone = "Leadership Tone"
-    output = asyncio.run(professional_responce(tone, resume_data, job_description))
-    print(output.summary)
+#     tone = "Leadership Tone"
+#     output = asyncio.run(professional_responce(tone, resume_data, job_description))
+#     print(output.summary)

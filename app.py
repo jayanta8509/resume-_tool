@@ -25,6 +25,8 @@ from data_ex import extract_text_from_pdf,resume_json
 from grammarly import correct_grammar
 from jd_based_professional_recommend import professional_responce_gap
 from jd_based_experience_recommend import experience_response_gap
+from JD_Professional_s_improvment_agent import professional_improve_responce
+from JD_Experience_d_improvment_agent import Experience_improve_result
 load_dotenv()
 
 # Setup logging
@@ -69,6 +71,20 @@ class JDAgentRequest(BaseModel):
     JD: str = Field(..., min_length=1, description="Job Description")
 
     @field_validator("security_id", "original_text", "JD")
+    @classmethod
+    def validate_non_empty_fields(cls, v: str) -> str:
+        if not v or not v.strip():
+            raise ValueError("This field cannot be empty")
+        return v.strip()
+    
+class JDAgentimprovmentRequest(BaseModel):
+    security_id: str = Field(..., min_length=1, description="Security authentication ID")
+    tone: Tone = Field(default=Tone.PROFESSIONAL, description="Tone for summary generation")
+    original_text: str = Field(..., min_length=1, description="Original text to enhance")
+    jd_needs : str = Field(..., min_length=1, description="JD needs to improve the resume")
+    JD: str = Field(..., min_length=1, description="Job Description")
+
+    @field_validator("security_id", "original_text", "jd_needs", "JD")
     @classmethod
     def validate_non_empty_fields(cls, v: str) -> str:
         if not v or not v.strip():
@@ -261,6 +277,40 @@ async def generate_summary_with_JD(request: JDAgentRequest) -> dict:
         )
 
 
+@app.post(
+    "/agent/JD/professional/summary/improvement",
+    status_code=status.HTTP_200_OK,
+    summary="Improvement professional summary",
+    description="Enhances resume text using AI-powered professional tone",
+    tags=["Resume API With Job Description Improvement"]
+
+)
+async def generate_summary_with_JD_Improvement(request: JDAgentimprovmentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+
+        tone = TONE_MAPPING.get(request.tone.value, TONE_MAPPING[Tone.PROFESSIONAL])
+        result = await professional_improve_responce(tone, request.original_text, request.jd_needs, request.JD)
+
+        return {
+            "summary": result.summary,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
+
 
 
 @app.post(
@@ -432,6 +482,39 @@ async def generate_Experience_Description_with_JD(request: JDAgentRequest) -> di
             detail="An error occurred while processing your request"
         )
 
+
+@app.post(
+    "/agent/JD/Experience/Description/improvement",
+    status_code=status.HTTP_200_OK,
+    summary="Improvement Experience Description with JD",
+    description="Enhances resume experience using AI-powered professional tone with job description",
+    tags=["Resume API With Job Description Improvement"]
+)
+async def improve_Experience_Description_with_JD(request: JDAgentimprovmentRequest) -> dict:
+    try:
+        if request.security_id != SECURITY_ID:
+            logger.warning(f"Failed authentication attempt with security_id: {request.security_id[:4]}***")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid security credentials"
+            )
+
+        tone = TONE_MAPPING.get(request.tone.value, TONE_MAPPING[Tone.PROFESSIONAL])
+        result = await Experience_improve_result(tone, request.original_text, request.jd_needs, request.JD)
+
+        return {
+            "summary": result.description,
+            "timestamp": time.time(),
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An error occurred while processing your request"
+        )
 
 
 @app.post(

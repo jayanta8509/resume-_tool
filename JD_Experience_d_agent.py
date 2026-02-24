@@ -26,10 +26,11 @@ model = ChatOpenAI(
 )
 
 
-async def Professional_Clean_Tone(description, job_description):
-    Professional_P_Clean_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to rewrite the work experience description to maximize ATS score by strategically incorporating relevant keywords from the job description.
+async def Professional_Clean_Tone(resume_data, job_description):
+    Professional_P_Clean_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to CREATE a new work experience description from scratch based on the candidate's resume data and the job description.
 
-    **Original Experience Description:** {description}
+    **Candidate's Resume Data:**
+    {resume_data}
 
     **Job Description:** {job_description}
 
@@ -67,10 +68,11 @@ async def Professional_Clean_Tone(description, job_description):
 
     return Professional_P_Clean_Tone
 
-async def Impactful_Strong_Tone(description, job_description):
-    Impactful_P_Strong_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to rewrite the work experience description to maximize ATS score by strategically incorporating relevant keywords from the job description while maintaining an impactful and strong tone.
+async def Impactful_Strong_Tone(resume_data, job_description):
+    Impactful_P_Strong_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to CREATE a new work experience description from scratch based on the candidate's resume data and the job description, maintaining an impactful and strong tone.
 
-    **Original Experience Description:** {description}
+    **Candidate's Resume Data:**
+    {resume_data}
 
     **Job Description:** {job_description}
 
@@ -110,10 +112,11 @@ async def Impactful_Strong_Tone(description, job_description):
 
     return Impactful_P_Strong_Tone
 
-async def Leadership_Tone(description, job_description):
-    Leadership_P_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to rewrite the work experience description to maximize ATS score by strategically incorporating relevant keywords from the job description while maintaining a leadership-focused tone.
+async def Leadership_Tone(resume_data, job_description):
+    Leadership_P_Tone = f"""You are an expert ATS-optimized resume consultant. Your task is to CREATE a new work experience description from scratch based on the candidate's resume data and the job description, maintaining a leadership-focused tone.
 
-    **Original Experience Description:** {description}
+    **Candidate's Resume Data:**
+    {resume_data}
 
     **Job Description:** {job_description}
 
@@ -154,25 +157,25 @@ async def Leadership_Tone(description, job_description):
     return Leadership_P_Tone
 
 
-async def Experience_result(tone: str, description: str, job_description: str):
+async def Experience_result(tone: str, resume_data: str, job_description: str):
     if tone == "Professional & Clean":
-          prompt = await Professional_Clean_Tone(description, job_description)
+          prompt = await Professional_Clean_Tone(resume_data, job_description)
           agent = create_agent(model,
                   response_format=ToolStrategy(Experience_description),
                   system_prompt=prompt)
 
     elif tone == "Impactful & Strong":
-        prompt = await Impactful_Strong_Tone(description, job_description)
+        prompt = await Impactful_Strong_Tone(resume_data, job_description)
         agent = create_agent(model,
                   response_format=ToolStrategy(Experience_description),
                   system_prompt=prompt)
     else:
-        prompt = await Leadership_Tone(description, job_description)
+        prompt = await Leadership_Tone(resume_data, job_description)
         agent = create_agent(model,
                   response_format=ToolStrategy(Experience_description),
                   system_prompt=prompt)
 
-    context_message = """Please rewrite the experience description according to the guidelines provided, incorporating relevant keywords from the job description to maximize ATS score."""
+    context_message = """Please CREATE a new experience description from the resume data provided, following the guidelines and incorporating relevant keywords from the job description to maximize ATS score."""
 
     result = agent.invoke(
         {"messages": [{"role": "user", "content": context_message}]}
@@ -181,28 +184,34 @@ async def Experience_result(tone: str, description: str, job_description: str):
     return ans
 
 # if __name__ == "__main__":
-#     description = """• Deployed AI Financial Advisor Platform integrating LangChain, CrewAI, AutoGen agents with OpenAI-ada-002 
-# embeddings, Pinecone vector DB, IBM Watson transcription API, and Twilio REST API for real-time 
-# advisor-client communication. 
-# • Fine-tuned Mistral-7B on e-commerce FAQ dataset using PEFT with LoRA and Supervised Fine-tuning Trainer, achieving 30% 
-# improvement in query understanding and response accuracy for customer support automation. 
-# • Built production loan prediction and repayment models using SGD algorithm, NumPy, Pandas with comprehensive EDA and 
-# feature engineering, achieving 85%+ accuracy in credit risk assessment. 
-# • Designed dual-mode recommendation engine using SVD algorithm, delivering personalized product suggestions for 10K+ users 
-# with selection sort optimization for new and existing customer segments. """
+  
+
+#     resume_data = """PROFESSIONAL SUMMARY
+#     AI/ML Engineer with 2+ years of experience building production-grade LLM and computer vision systems across e-commerce, finance, and recruitment. Delivered a virtual try-on platform with 95%+ accuracy, a three-agent screening solution that cut hiring workflows by 40%, and a fine-tuned Mistral-7B model improving FAQ accuracy by 30%. Proficient in Python, FastAPI, LangChain/RAG, vector databases, and AWS/RunPod deployment.
+
+#     TECHNICAL SKILLS
+#     Languages: Python, C/C++, SQL
+#     AI/ML Frameworks: LangChain, RAG, LangGraph, CrewAI, AutoGen, Swarm, Pydantic AI, MLOps, Scikit-Learn, TensorFlow, Keras, PyTorch
+#     LLM & Models: OpenAI GPT-4/4o, Gemini, DeepSeek, Anthropic Claude, Grok, Mistral, BERT, T5, Stable Diffusion, Hugging Face
+#     Databases: PostgreSQL, MySQL, Redis, Pinecone, FAISS, Chroma, Qdrant (Vector DBs)
+#     DevOps & Cloud: Docker, Git, AWS (SageMaker, EC2, Lambda, S3, LightSail), RunPod GPU Servers, CI/CD Pipelines
+#     APIs & Web: FastAPI, Flask, Quart, Django REST, RESTful APIs, OpenCV, Beautiful Soup
+#     ML Techniques: NLP, Computer Vision, Supervised/Unsupervised Learning, Feature Engineering, XGBoost, SGD, PEFT, LoRA, Model Fine-tuning
+#     """
 
 #     job_description = """We are looking for a Senior AI/ML Engineer with experience in:
-# - LangChain, LangGraph, and LLM framework development
-# - RAG (Retrieval Augmented Generation) pipelines and vector databases
-# - Python development and AI agent architecture
-# - AWS cloud services and deployment
-# - Building scalable AI/ML solutions
-# - Experience with vector databases (Pinecone, Weaviate, etc.)
-# - Full-stack development with React
-# - Product engineering and automation tools
-# - Leading AI product development from concept to deployment"""
+#     - LangChain, LangGraph, and LLM framework development
+#     - RAG (Retrieval Augmented Generation) pipelines and vector databases
+#     - Python development and AI agent architecture
+#     - AWS cloud services and deployment
+#     - Building scalable AI/ML solutions
+#     - Experience with vector databases (Pinecone, Weaviate, etc.)
+#     - Full-stack development with React
+#     - Product engineering and automation tools
+#     - Leading AI product development from concept to deployment"""
 
 #     tone = "Leadership Tone"
-#     output = asyncio.run(Experience_result(tone, description, job_description))
+#     output = asyncio.run(Experience_result(tone, resume_data, job_description))
 #     r = output.description
+#     print(r)
 #     print(len(r))

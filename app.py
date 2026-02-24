@@ -231,7 +231,7 @@ async def generate_p_summary(request: AgentRequest) -> dict:
     status_code=status.HTTP_200_OK,
     summary="Generate professional summary",
     description="Enhances resume text using AI-powered professional tone",
-    tags=["Resume API With Job Description"]
+    tags=["Resume API With Job Description Generate"]
 
 )
 async def generate_summary_with_JD(request: JDAgentRequest) -> dict:
@@ -404,7 +404,7 @@ async def generate_P_Experience_Description(request: AgentRequest) -> dict:
     status_code=status.HTTP_200_OK,
     summary="Generate Experience Description with JD",
     description="Enhances resume experience using AI-powered professional tone with job description",
-    tags=["Resume API With Job Description"]
+    tags=["Resume API With Job Description Generate"]
 )
 async def generate_Experience_Description_with_JD(request: JDAgentRequest) -> dict:
     try:
